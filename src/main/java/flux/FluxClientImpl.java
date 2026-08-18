@@ -94,15 +94,15 @@ public class FluxClientImpl implements FluxClient, EventDispatcher {
         this.gatewayClient.setBotToken(botToken);
         this.gatewayClient.setIntents(intents);
 
-        LOGGER.info("FluxClient: Token and intents set. Resolving Gateway URL...");
+        LOGGER.debug("token set, resolving gateway");
 
         return resolveGatewayUrl(botToken).thenCompose(gatewayUrl -> {
             gatewayClient.setGatewayUrl(gatewayUrl);
-            LOGGER.info("Connecting to Gateway at {}...", gatewayUrl);
+            LOGGER.debug("connecting to {}", gatewayUrl);
             return gatewayClient.connect();
         }).thenRun(() -> {
             loggedIn = true;
-            LOGGER.info("FluxClient successfully connected to Gateway and received READY.");
+            LOGGER.debug("gateway connected");
         }).exceptionally(throwable -> {
             LOGGER.error("FluxClient login failed during Gateway connection.", throwable);
 
@@ -125,7 +125,7 @@ public class FluxClientImpl implements FluxClient, EventDispatcher {
                         return configuredGateway;
                     }
                     String discovered = gatewayNode.asText();
-                    LOGGER.info("Gateway URL discovered: {}", discovered);
+                    LOGGER.debug("gateway url {}", discovered);
                     return discovered;
                 })
                 .exceptionally(throwable -> {
@@ -185,7 +185,7 @@ public class FluxClientImpl implements FluxClient, EventDispatcher {
         if (event instanceof ReadyEvent readyEvent) {
             this.selfUser = readyEvent.getSelfUser();
             this.sessionId = readyEvent.getSessionId();
-            LOGGER.info("Client is READY. Session ID set to {}", this.sessionId);
+            LOGGER.debug("ready session {}", this.sessionId);
         }
 
         if (event instanceof VoiceServerUpdateEvent vsu) {

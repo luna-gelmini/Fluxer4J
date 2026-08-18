@@ -103,7 +103,7 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
             connectionFuture = new CompletableFuture<>();
         }
 
-        LOGGER.info("Attempting to connect to Fluxer Gateway...");
+        LOGGER.debug("connecting to Fluxer gateway");
         establishWebSocketConnection();
         return connectionFuture;
     }
@@ -117,7 +117,7 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
         String url = (sessionId != null && resumeGatewayUrl != null) ? resumeGatewayUrl : ApiEnvironment.getGatewayUrl();
         String fullGatewayUrl = url + "/?v=" + ApiEnvironment.getGatewayVersion() + "&encoding=" + ENCODING;
 
-        LOGGER.info("Connecting to WebSocket URL: {}", fullGatewayUrl);
+        LOGGER.debug("websocket {}", fullGatewayUrl);
         Request request = new Request.Builder().url(fullGatewayUrl).build();
         webSocket = httpClient.newWebSocket(request, new FluxWebSocketListener());
     }
@@ -203,7 +203,7 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
     }
 
     private void sendIdentify() {
-        LOGGER.info("Sending Identify payload...");
+        LOGGER.debug("identify");
         state.set(GatewayState.IDENTIFYING);
         IdentifyPayload identifyData = new IdentifyPayload();
         identifyData.token = this.botToken;
@@ -241,7 +241,7 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
             t.setDaemon(true);
             return t;
         });
-        LOGGER.info("Starting heartbeat with interval: {}ms", intervalMillis);
+        LOGGER.debug("heartbeat every {}ms", intervalMillis);
         long initialDelay = (long) (intervalMillis * Math.random());
         heartbeatTask = heartbeatExecutor.scheduleAtFixedRate(this::sendHeartbeat, initialDelay, intervalMillis,
                 TimeUnit.MILLISECONDS);
@@ -329,9 +329,9 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
         @JsonProperty("os")
         public String os = System.getProperty("os.name");
         @JsonProperty("browser")
-        public String browser = "Flux";
+        public String browser = "Fluxer4J";
         @JsonProperty("device")
-        public String device = "Flux";
+        public String device = "Fluxer4J";
     }
 
     private static class IdentifyPayload {
@@ -346,7 +346,7 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
     private class FluxWebSocketListener extends WebSocketListener {
         @Override
         public void onOpen(@NotNull WebSocket ws, @NotNull Response response) {
-            LOGGER.info("WebSocket Connection Opened!");
+            LOGGER.debug("websocket opened");
             response.close();
         }
 
@@ -373,7 +373,7 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
                         attemptReconnect(payload.d.asBoolean());
                     }
                     case 10 -> {
-                        LOGGER.info("Received Hello from Gateway.");
+                        LOGGER.debug("hello from gateway");
                         receivedHeartbeatAck.set(true);
                         HelloPayload helloData = jsonEngine.fromJsonString(payload.d.toString(), HelloPayload.class);
                         startHeartbeat(helloData.heartbeatInterval);
@@ -409,7 +409,7 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
                 switch (eventType) {
                     case "READY" -> {
                         ReadyPayloadData readyData = jsonEngine.fromJsonString(eventDataJson, ReadyPayloadData.class);
-                        LOGGER.info("Gateway READY received! Session ID: {}", readyData.getSessionId());
+                        LOGGER.debug("gateway ready session {}", readyData.getSessionId());
                         state.set(GatewayState.CONNECTED);
                         sessionId = readyData.getSessionId();
                         resumeGatewayUrl = readyData.getResumeGatewayUrl();
@@ -451,7 +451,7 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
                                 v.setGuildId(guild.getId());
                         });
                         event = new GuildCreateEvent(clientInstance, guild);
-                        LOGGER.info("Dispatched GuildCreateEvent for guild: {}", guild.getName());
+                        LOGGER.debug("guild create {}", guild.getName());
                     }
                     case "GUILD_MEMBER_ADD" -> {
                         MemberImpl memberAdded = jsonEngine.fromJsonString(eventDataJson, MemberImpl.class);
