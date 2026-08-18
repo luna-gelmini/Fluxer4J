@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>app.flux</groupId>
-    <artifactId>flux</artifactId>
+    <groupId>app.fluxer4j</groupId>
+    <artifactId>fluxer4j</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>Fl.ux</name>
+    <name>Fluxer4J</name>
     <description>Complete Fluxer API wrapper: generated REST from OpenAPI, Gateway and voice.</description>
 
     <properties>
