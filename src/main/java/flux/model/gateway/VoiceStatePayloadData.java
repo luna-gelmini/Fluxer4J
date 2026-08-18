@@ -15,6 +15,9 @@ public class VoiceStatePayloadData {
     @JsonProperty("session_id")
     private String sessionId;
 
+    @JsonProperty("connection_id")
+    private String connectionId;
+
     @JsonProperty("deaf")
     private boolean deaf;
 
@@ -50,6 +53,10 @@ public class VoiceStatePayloadData {
 
     public String getSessionId() {
         return sessionId;
+    }
+
+    public String getConnectionId() {
+        return connectionId != null && !connectionId.isBlank() ? connectionId : sessionId;
     }
 
     public boolean isDeaf() {

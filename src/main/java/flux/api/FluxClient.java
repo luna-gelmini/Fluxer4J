@@ -67,6 +67,11 @@ public interface FluxClient {
     CompletableFuture<Void> modifyGuildMemberVoiceChannel(String guildId, String userId,
             @Nullable String voiceChannelId);
 
+    default CompletableFuture<Void> modifyGuildMemberVoiceChannel(String guildId, String userId,
+            @Nullable String voiceChannelId, @Nullable String connectionId) {
+        return modifyGuildMemberVoiceChannel(guildId, userId, voiceChannelId);
+    }
+
     CompletableFuture<Channel> modifyChannel(String channelId, ChannelModifyPayload payload);
 
     CompletableFuture<Void> editChannelPermissions(String channelId, String targetId, TargetType type,

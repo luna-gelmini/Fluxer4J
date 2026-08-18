@@ -14,19 +14,26 @@ public class VoiceStateUpdateEvent extends AbstractEvent {
     private final String guildId;
     private final String channelId;
     private final String userId;
+    private final String connectionId;
     private final boolean isMuted;
     private final boolean isDeafened;
 
     public VoiceStateUpdateEvent(FluxClient fluxClient,
                                  String guildId, String channelId, String userId,
                                  boolean isMuted, boolean isDeafened) {
+        this(fluxClient, guildId, channelId, userId, isMuted, isDeafened, null);
+    }
+
+    public VoiceStateUpdateEvent(FluxClient fluxClient,
+                                 String guildId, String channelId, String userId,
+                                 boolean isMuted, boolean isDeafened, String connectionId) {
         super(fluxClient);
         this.guildId = guildId;
         this.channelId = channelId;
         this.userId = userId;
+        this.connectionId = connectionId;
         this.isMuted = isMuted;
         this.isDeafened = isDeafened;
-
     }
 
     public String getGuildId() {
@@ -39,6 +46,10 @@ public class VoiceStateUpdateEvent extends AbstractEvent {
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getConnectionId() {
+        return connectionId;
     }
 
     public boolean isMuted() {

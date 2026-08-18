@@ -425,6 +425,9 @@ public class FluxClientImpl implements FluxClient, EventDispatcher {
         return restClient.delete(url, Collections.emptyMap())
                 .thenApply(responseBody -> {
                     LOGGER.debug("Received response for deleteChannel: {}", responseBody);
+                    if (responseBody == null || responseBody.isBlank()) {
+                        return null;
+                    }
                     Channel deletedChannel = jsonEngine.fromJsonString(responseBody, Channel.class);
                     deletedChannel.setFluxClient(this);
                     return deletedChannel;
@@ -436,6 +439,12 @@ public class FluxClientImpl implements FluxClient, EventDispatcher {
 
     public CompletableFuture<Void> modifyGuildMemberVoiceChannel(String guildId, String userId,
             @Nullable String voiceChannelId) {
+        return modifyGuildMemberVoiceChannel(guildId, userId, voiceChannelId, null);
+    }
+
+    @Override
+    public CompletableFuture<Void> modifyGuildMemberVoiceChannel(String guildId, String userId,
+            @Nullable String voiceChannelId, @Nullable String connectionId) {
         if (!loggedIn) {
             return CompletableFuture.failedFuture(new FluxException("Not logged in. Call login() first."));
         }
@@ -443,9 +452,10 @@ public class FluxClientImpl implements FluxClient, EventDispatcher {
         Objects.requireNonNull(userId, "User ID cannot be null");
 
         String url = Routes.guildMember(guildId, userId);
-        ModifyMemberPayload payload = new ModifyMemberPayload(voiceChannelId);
+        ModifyMemberPayload payload = new ModifyMemberPayload(voiceChannelId, connectionId);
         String jsonPayload = jsonEngine.toJsonString(payload);
-        LOGGER.debug("Modifying guild member {} in {}. Setting voice channel to: {}", userId, guildId, voiceChannelId);
+        LOGGER.debug("Modifying guild member {} in {}. Setting voice channel to: {} (connection {})",
+                userId, guildId, voiceChannelId, connectionId);
 
         return restClient.patch(url, jsonPayload, Collections.emptyMap())
                 .thenAccept(responseBody -> LOGGER

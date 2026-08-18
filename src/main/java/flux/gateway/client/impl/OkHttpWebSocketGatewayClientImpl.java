@@ -474,7 +474,7 @@ public class OkHttpWebSocketGatewayClientImpl implements GatewayClient {
                                 VoiceStatePayloadData.class);
                         event = new VoiceStateUpdateEvent(clientInstance, vsData.getGuildId(), vsData.getChannelId(),
                                 vsData.getUserId(), vsData.isMute() || vsData.isSelfMute(),
-                                vsData.isDeaf() || vsData.isSelfDeaf());
+                                vsData.isDeaf() || vsData.isSelfDeaf(), vsData.getConnectionId());
                     }
                     case "VOICE_SERVER_UPDATE" -> {
                         JsonNode guildIdNode = eventDataNode.get("guild_id");
